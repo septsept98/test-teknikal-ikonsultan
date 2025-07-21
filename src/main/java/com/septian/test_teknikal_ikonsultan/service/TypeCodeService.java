@@ -1,24 +1,27 @@
 package com.septian.test_teknikal_ikonsultan.service;
 
+import com.septian.test_teknikal_ikonsultan.model.exception.ErrorException;
+import com.septian.test_teknikal_ikonsultan.model.response.GetTypiCodePaginationResponse;
 import com.septian.test_teknikal_ikonsultan.model.response.TypiCodeResponse;
-import com.septian.test_teknikal_ikonsultan.repository.TypiCodeRepository;
+import com.septian.test_teknikal_ikonsultan.feignclient.TypiCodeFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class TypeCodeService implements ITypiCodeService{
-    private final TypiCodeRepository typiCodeRepository;
+    private final TypiCodeFeignClient typiCodeFeignClient;
 
     @Autowired
-    public TypeCodeService(TypiCodeRepository typiCodeRepository) {
-        this.typiCodeRepository = typiCodeRepository;
+    public TypeCodeService(TypiCodeFeignClient typiCodeFeignClient) {
+        this.typiCodeFeignClient = typiCodeFeignClient;
     }
 
     @Override
-    public List<TypiCodeResponse> getAllData() {
-        return typiCodeRepository.getTypiCodeList()
+    public GetTypiCodePaginationResponse getAllData(int page, int size) {
+         List<TypiCodeResponse> typiCodeList = typiCodeFeignClient.getTypiCodeList()
                 .stream()
                 .map(data -> {
                     TypiCodeResponse res = new TypiCodeResponse();
@@ -27,5 +30,18 @@ public class TypeCodeService implements ITypiCodeService{
                     return res;
                 })
                 .toList();
+
+         int totalItems = typiCodeList.size();
+         int fromIndex = page * size;
+         int toIndex = Math.min(fromIndex + size, totalItems);
+         int totalPages = totalItems /size ;
+
+         List<TypiCodeResponse> typiCodePage;
+         if (fromIndex<toIndex)
+            typiCodePage = typiCodeList.subList(fromIndex, toIndex);
+         else
+             throw new ErrorException("Page terlalu besar", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST);
+
+         return new GetTypiCodePaginationResponse(typiCodePage,page,size, totalPages,totalItems);
     }
 }

@@ -1,13 +1,12 @@
 package com.septian.test_teknikal_ikonsultan.controller;
 
-import com.septian.test_teknikal_ikonsultan.model.response.TypiCodeResponse;
+import com.septian.test_teknikal_ikonsultan.model.response.GetTypiCodePaginationResponse;
 import com.septian.test_teknikal_ikonsultan.service.TypeCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 public class TypiCodeController {
@@ -19,7 +18,8 @@ public class TypiCodeController {
     }
 
     @GetMapping("/typi-code")
-    public ResponseEntity<List<TypiCodeResponse>> getAllData(){
-        return ResponseEntity.ok(typiCodeService.getAllData());
+    public ResponseEntity<GetTypiCodePaginationResponse> getAllData(@RequestParam("page") int page,
+                                                                    @RequestParam("size") int size){
+        return ResponseEntity.ok(typiCodeService.getAllData(page, size));
     }
 }
