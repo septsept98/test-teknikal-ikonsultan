@@ -1,4 +1,4 @@
-package com.septian.test_teknikal_ikonsultan.repository;
+package com.septian.test_teknikal_ikonsultan.feignclient;
 
 import com.septian.test_teknikal_ikonsultan.model.entity.TypiCodeEntity;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -9,8 +9,8 @@ import java.util.List;
 
 @Repository
 @FeignClient(name = "typi-code", url = "${typi-code.url}")
-public interface TypiCodeRepository {
+public interface TypiCodeFeignClient {
 
     @GetMapping
-    public List<TypiCodeEntity> getTypiCodeList();
+    List<TypiCodeEntity> getTypiCodeList();
 }
